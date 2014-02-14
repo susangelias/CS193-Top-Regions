@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CoreDataTableViewController.h"
 
-@interface TopRegionsTVC : UITableViewController
+
+@interface TopRegionsTVC : CoreDataTableViewController
 
 @end

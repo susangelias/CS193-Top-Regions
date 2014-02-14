@@ -8,6 +8,7 @@
 
 #import "TopRegionsTVC.h"
 #import "TopRegionsAppDelegate.h"
+#import "Region.h"
 
 @interface TopRegionsTVC ()
 
@@ -45,13 +46,38 @@
 #warning figure out when to remove self from notification center
         [[NSNotificationCenter defaultCenter] removeObserver:self];
     }
-    
+
 }
 
-- (void)didReceiveMemoryWarning
+- (void) setContext:(NSManagedObjectContext *)context
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
+    _context = context;
+    
+    // Set up fetch request for this view from our core data
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Region"];
+    request.predicate = nil;
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"name"
+                                ascending:YES
+                                selector:@selector(localizedStandardCompare:)]];
+    request.fetchLimit = 50;
+    
+    self.fetchedResultsController = [[NSFetchedResultsController alloc]initWithFetchRequest:request
+                                                                       managedObjectContext:_context
+                                                                         sectionNameKeyPath:nil
+                                                                                  cacheName:nil ];
+    
+ }
 
+#pragma mark UITableViewDataSource
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"Flickr Region Cell"];
+    
+    // get region out of model
+    Region *region = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    cell.textLabel.text = region.name;
+    
+    return cell;
+}
 @end

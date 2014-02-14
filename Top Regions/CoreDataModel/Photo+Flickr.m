@@ -9,6 +9,7 @@
 #import "Photo+Flickr.h"
 #import "FlickrFetcher.h"
 #import "Photographer+create.h"
+#import "Region+create.h"
 
 
 @implementation Photo (Flickr)
@@ -32,6 +33,7 @@
     else if ([matches count])
     {
         photo = [matches firstObject];
+ //       NSLog(@"photo found who = %@, where = %@", photo.whoTook, photo.whereTook);
     }
     else
     {
@@ -45,8 +47,12 @@
         
         NSString *photographerName = [photoDictionary valueForKeyPath:FLICKR_PHOTO_OWNER];
         photo.whoTook = [Photographer photographerWithName:photographerName inManagedContext:context];
-        photo.whereTook = nil;
-        NSLog(@"created photo in core data %@", photo);
+        
+        NSString *placeID = [photoDictionary valueForKeyPath:FLICKR_PLACE_ID];
+        // tell the region entity that there is a photo from that region, it will take care of creating links to whereTook attribute
+        [Region regionWithPlaceID:placeID withPhoto:photo];
+        
+   //     NSLog(@"created photo in core data %@", photo);
     }
     
     return photo;

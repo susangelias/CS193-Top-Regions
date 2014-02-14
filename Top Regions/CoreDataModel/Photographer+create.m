@@ -8,6 +8,7 @@
 
 #import "Photographer+create.h"
 
+
 @implementation Photographer (create)
 
 // check our core data for the photographer with the given name
@@ -46,6 +47,7 @@
         {
             // photographer exists
             photographer = [matches firstObject];
+     //       NSLog(@"found photographer photos = %@", photographer.photos);
         }
     }
     

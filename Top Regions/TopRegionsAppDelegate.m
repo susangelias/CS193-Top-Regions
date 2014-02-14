@@ -147,7 +147,7 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
 
 - (void) startFlickrFetch
 {
-    // start a background download session - musjt use getTalksWithCompletionHandler when using a background session
+    // start a background download session - must use getTasksWithCompletionHandler when using a background session
     // our completion is handled by the URLSessionDelegate methods
     [self.flickrDownloadSession getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
         if (![downloadTasks count])
