@@ -125,7 +125,7 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
 {
     if (self.topRegionsManagedDocument.documentState != UIDocumentStateNormal)
     {
-        NSLog(@"managedDocumentIsReady failed: documentState = %lu", self.topRegionsManagedDocument.documentState);
+        NSLog(@"managedDocumentIsReady failed: documentState = %u", self.topRegionsManagedDocument.documentState);
     }
     else
     {

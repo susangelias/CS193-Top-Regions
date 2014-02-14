@@ -10,12 +10,12 @@
         <relationship name="whereTook" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Region" inverseName="photos" inverseEntity="Region" syncable="YES"/>
         <relationship name="whoTook" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Photographer" inverseName="photos" inverseEntity="Photographer" syncable="YES"/>
     </entity>
-    <entity name="Photographer" syncable="YES">
+    <entity name="Photographer" representedClassName="Photographer" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="whoTook" inverseEntity="Photo" syncable="YES"/>
         <relationship name="regions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Region" inverseName="photographers" inverseEntity="Region" syncable="YES"/>
     </entity>
-    <entity name="Region" syncable="YES">
+    <entity name="Region" representedClassName="Region" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="photographers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photographer" inverseName="regions" inverseEntity="Photographer" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="whereTook" inverseEntity="Photo" syncable="YES"/>

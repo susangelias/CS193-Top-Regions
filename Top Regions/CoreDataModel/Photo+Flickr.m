@@ -8,6 +8,7 @@
 
 #import "Photo+Flickr.h"
 #import "FlickrFetcher.h"
+#import "Photographer+create.h"
 
 
 @implementation Photo (Flickr)
@@ -41,8 +42,11 @@
         photo.imageURL = [[FlickrFetcher URLforPhoto:photoDictionary format:FlickrPhotoFormatLarge]absoluteString];
         photo.thumbnail = nil;
         photo.thumbnailURL = nil;
-        photo.whoTook = nil;
+        
+        NSString *photographerName = [photoDictionary valueForKeyPath:FLICKR_PHOTO_OWNER];
+        photo.whoTook = [Photographer photographerWithName:photographerName inManagedContext:context];
         photo.whereTook = nil;
+        NSLog(@"created photo in core data %@", photo);
     }
     
     return photo;
