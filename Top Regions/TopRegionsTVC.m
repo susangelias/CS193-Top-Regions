@@ -59,7 +59,7 @@
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"name"
                                 ascending:YES
                                 selector:@selector(localizedStandardCompare:)]];
-    request.fetchLimit = 50;
+  //  request.fetchLimit = 50;
     
     self.fetchedResultsController = [[NSFetchedResultsController alloc]initWithFetchRequest:request
                                                                        managedObjectContext:_context
@@ -77,6 +77,15 @@
     // get region out of model
     Region *region = [self.fetchedResultsController objectAtIndexPath:indexPath];
     cell.textLabel.text = region.name;
+    NSString *photographerText = nil;
+    NSUInteger numberOfPhotographers = [region.photographers count];
+    if (numberOfPhotographers > 1) {
+        photographerText = @"Photographers";
+    }
+    else {
+        photographerText = @"Photographer";
+    }
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%d %@", numberOfPhotographers, photographerText];
     
     return cell;
 }
