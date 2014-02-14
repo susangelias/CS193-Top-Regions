@@ -32,43 +32,46 @@
             // fetch the json data from Flickr
             NSData *jsonResults = [NSData dataWithContentsOfURL:url];
             // put it into a property list
-            NSDictionary *propertyListResults = [NSJSONSerialization JSONObjectWithData:jsonResults
-                                                                                options:0
-                                                                                  error:NULL];
-            // Pull the place information out of the propertyList
-            name = [FlickrFetcher extractRegionNameFromPlaceInformation:propertyListResults];
-            if (name)
+            if (jsonResults)
             {
-                // see if this region already exists
-                NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Region"];
-                NSEntityDescription *description = [ NSEntityDescription entityForName:@"Region" inManagedObjectContext:context];
-                [request setEntity:description];
-                
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name = %@", name];
-                [request setPredicate:predicate];
-                
-                NSError *error;
-                NSArray *matches = [context executeFetchRequest:request error:&error];
-                
-                if ((matches == nil) || ([matches count] > 1))
+                NSDictionary *propertyListResults = [NSJSONSerialization JSONObjectWithData:jsonResults
+                                                                                    options:0
+                                                                                      error:NULL];
+                // Pull the place information out of the propertyList
+                name = [FlickrFetcher extractRegionNameFromPlaceInformation:propertyListResults];
+                if (name)
                 {
-                    // handle error
-                }
-                else if ([matches count] == 0)
-                {
-                    // region doesn't exist - create one
-                    region = [NSEntityDescription insertNewObjectForEntityForName:@"Region"
-                                                                 inManagedObjectContext:context];
-                    region.name = name;
-                    region.photos = [NSSet setWithObject:photo];    // create a new set with 1 object
-                    region.photographers = [NSSet setWithObject:photo.whoTook];
-                }
-                else
-                {
-                    // region exists - add more photos and photographers to its relationships
-                    region = [matches firstObject];
-                    [region.photos setByAddingObject:photo];    // create a new set by adding an object to the existing set
-                    [region.photographers setByAddingObject:photo.whoTook];
+                    // see if this region already exists
+                    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Region"];
+                    NSEntityDescription *description = [ NSEntityDescription entityForName:@"Region" inManagedObjectContext:context];
+                    [request setEntity:description];
+                    
+                    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name = %@", name];
+                    [request setPredicate:predicate];
+                    
+                    NSError *error;
+                    NSArray *matches = [context executeFetchRequest:request error:&error];
+                    
+                    if ((matches == nil) || ([matches count] > 1))
+                    {
+                        // handle error
+                    }
+                    else if ([matches count] == 0)
+                    {
+                        // region doesn't exist - create one
+                        region = [NSEntityDescription insertNewObjectForEntityForName:@"Region"
+                                                                     inManagedObjectContext:context];
+                        region.name = name;
+                        region.photos = [NSSet setWithObject:photo];    // create a new set with 1 object
+                        region.photographers = [NSSet setWithObject:photo.whoTook];
+                    }
+                    else
+                    {
+                        // region exists - add more photos and photographers to its relationships
+                        region = [matches firstObject];
+                        [region.photos setByAddingObject:photo];    // create a new set by adding an object to the existing set
+                        [region.photographers setByAddingObject:photo.whoTook];
+                    }
                 }
             }
         });
