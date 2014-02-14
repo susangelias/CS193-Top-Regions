@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TopRegionsViewController : UIViewController
+@interface TopRegionsTVC : UITableViewController
 
 @end

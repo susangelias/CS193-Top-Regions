@@ -8,8 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+extern NSString *const ContextReady;
+#define PhotoDatabaseAvailabilityContext @"Context"
+#define FLICKR_FETCH @"Flickr just uploaded fetch"
+
 @interface TopRegionsAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+
 
 @end
