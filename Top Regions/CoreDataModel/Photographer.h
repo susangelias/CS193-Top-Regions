@@ -2,14 +2,14 @@
 //  Photographer.h
 //  Top Regions
 //
-//  Created by Susan Elias on 2/14/14.
+//  Created by Susan Elias on 2/15/14.
 //  Copyright (c) 2014 GriffTech. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class Photo;
+@class Photo, Region;
 
 @interface Photographer : NSManagedObject
 
@@ -25,8 +25,8 @@
 - (void)addPhotos:(NSSet *)values;
 - (void)removePhotos:(NSSet *)values;
 
-- (void)addRegionsObject:(NSManagedObject *)value;
-- (void)removeRegionsObject:(NSManagedObject *)value;
+- (void)addRegionsObject:(Region *)value;
+- (void)removeRegionsObject:(Region *)value;
 - (void)addRegions:(NSSet *)values;
 - (void)removeRegions:(NSSet *)values;
 

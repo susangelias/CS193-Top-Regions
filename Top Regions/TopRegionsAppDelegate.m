@@ -20,6 +20,7 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
 @property (nonatomic, strong) NSManagedObjectContext *context;
 @property (nonatomic, strong) NSURLSession *flickrDownloadSession;
 @property (copy, nonatomic) void (^flickrDownloadBackgroundURLSessionCompletionHandler)();
+@property (nonatomic, strong) NSTimer *flickrForegroundFetchTimer;
 
 
 @end
@@ -98,6 +99,8 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
         NSString *documentName = @"TopRegionsManagedDocument";
         NSURL *url = [documentsDirectory URLByAppendingPathComponent:documentName];
         
+        NSLog(@"url of managed document %@", url);
+        
         // INSTANTIATE OUR MANAGED DOCUMENT IF NEEDED
         _topRegionsManagedDocument = [[UIManagedDocument alloc]initWithFileURL:url];
         
@@ -140,6 +143,13 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
         
         // Get the initial data download going
         [self startFlickrFetch];
+        
+        // Set up a timer to keep fetches going when we are in the foreground
+        self.flickrForegroundFetchTimer = [NSTimer scheduledTimerWithTimeInterval:FOREGROUND_FLICKR_FETCH_INTERVAL
+                                                                           target:self
+                                                                         selector:@selector(startFlickrFetch)
+                                                                         userInfo:nil
+                                                                          repeats:YES];
     }
 }
 

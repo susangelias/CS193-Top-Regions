@@ -11,7 +11,7 @@
 
 @interface Region (create)
 
-+ (void )regionWithPlaceID: (NSString *)name
++ (Region * )regionWithPlaceID: (NSString *)name
                     withPhoto:(Photo *)photo;
 
 @end

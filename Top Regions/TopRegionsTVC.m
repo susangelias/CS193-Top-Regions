@@ -56,10 +56,15 @@
     // Set up fetch request for this view from our core data
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Region"];
     request.predicate = nil;
-    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"name"
-                                ascending:YES
-                                selector:@selector(localizedStandardCompare:)]];
-  //  request.fetchLimit = 50;
+    NSSortDescriptor *byNumberOfPhotograhers = [NSSortDescriptor sortDescriptorWithKey:@"numberOfPhotographers"
+                                                               ascending:NO
+                                                                selector:@selector(compare:)];
+    NSSortDescriptor *byName = [NSSortDescriptor sortDescriptorWithKey:@"name"
+                                                               ascending:YES
+                                                                selector:@selector(localizedStandardCompare:)];
+
+    request.sortDescriptors = @[byNumberOfPhotograhers, byName];
+    request.fetchLimit = 50;
     
     self.fetchedResultsController = [[NSFetchedResultsController alloc]initWithFetchRequest:request
                                                                        managedObjectContext:_context
@@ -78,7 +83,7 @@
     Region *region = [self.fetchedResultsController objectAtIndexPath:indexPath];
     cell.textLabel.text = region.name;
     NSString *photographerText = nil;
-    NSUInteger numberOfPhotographers = [region.photographers count];
+    NSInteger numberOfPhotographers = [region.numberOfPhotographers integerValue];
     if (numberOfPhotographers > 1) {
         photographerText = @"Photographers";
     }

@@ -17,12 +17,14 @@
     </entity>
     <entity name="Region" representedClassName="Region" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="numberOfPhotographers" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="placeID" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="photographers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photographer" inverseName="regions" inverseEntity="Photographer" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="whereTook" inverseEntity="Photo" syncable="YES"/>
     </entity>
     <elements>
         <element name="Photo" positionX="115" positionY="72" width="128" height="163"/>
         <element name="Photographer" positionX="403" positionY="368" width="128" height="88"/>
-        <element name="Region" positionX="385" positionY="27" width="128" height="88"/>
+        <element name="Region" positionX="385" positionY="9" width="128" height="103"/>
     </elements>
 </model>

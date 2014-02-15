@@ -49,8 +49,8 @@
         photo.whoTook = [Photographer photographerWithName:photographerName inManagedContext:context];
         
         NSString *placeID = [photoDictionary valueForKeyPath:FLICKR_PLACE_ID];
-        // tell the region entity that there is a photo from that region, it will take care of creating links to whereTook attribute
-        [Region regionWithPlaceID:placeID withPhoto:photo];
+        
+        photo.whereTook = [Region regionWithPlaceID:placeID withPhoto:photo];
         
    //     NSLog(@"created photo in core data %@", photo);
     }
@@ -65,6 +65,9 @@
     {
         [self photoWithFlickrInfo:photo inManagedObjectContext:context];
     }
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Photo"];
+    NSError *error;
+    NSLog(@"number of photos in database %ul", [context  countForFetchRequest:request error:&error]);
 }
 
 @end

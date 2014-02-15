@@ -14,7 +14,7 @@
 @implementation Region (create)
 
 
-+ (void) regionWithPlaceID: (NSString *)placeID
++ (Region *) regionWithPlaceID: (NSString *)placeID
                  withPhoto:(Photo *)photo
 {
     __block Region *region = nil;
@@ -62,22 +62,24 @@
                         region = [NSEntityDescription insertNewObjectForEntityForName:@"Region"
                                                                      inManagedObjectContext:context];
                         region.name = name;
-                        region.photos = [NSSet setWithObject:photo];    // create a new set with 1 object
-                        region.photographers = [NSSet setWithObject:photo.whoTook];
+                        region.placeID = placeID;
+                        [region addPhotosObject:photo];
+                        [region addPhotographersObject:photo.whoTook];
+                        region.numberOfPhotographers= [NSNumber numberWithInt:(int)1];
                     }
                     else
                     {
-                        // region exists - add more photos and photographers to its relationships
+                        // region exists 
                         region = [matches firstObject];
-                        [region.photos setByAddingObject:photo];    // create a new set by adding an object to the existing set
-                        [region.photographers setByAddingObject:photo.whoTook];
+                        [region addPhotographersObject:photo.whoTook];
+                        region.numberOfPhotographers= [NSNumber numberWithInt:[region.numberOfPhotographers intValue] + (int)1];
                     }
                 }
             }
         });
 
     }
-    
+    return region;
     
 }
 
