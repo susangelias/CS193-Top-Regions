@@ -19,6 +19,7 @@
 @dynamic thumbnail;
 @dynamic thumbnailURL;
 @dynamic title;
+@dynamic placeID;
 @dynamic whereTook;
 @dynamic whoTook;
 

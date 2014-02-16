@@ -71,6 +71,7 @@
                     {
                         // region exists 
                         region = [matches firstObject];
+                        [region addPhotosObject:photo];
                         [region addPhotographersObject:photo.whoTook];
                         region.numberOfPhotographers= [NSNumber numberWithInt:[region.numberOfPhotographers intValue] + (int)1];
                     }

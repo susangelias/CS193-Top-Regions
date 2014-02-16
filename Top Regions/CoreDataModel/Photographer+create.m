@@ -47,7 +47,6 @@
         {
             // photographer exists
             photographer = [matches firstObject];
-     //       NSLog(@"found photographer photos = %@", photographer.photos);
         }
     }
     

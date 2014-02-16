@@ -7,8 +7,6 @@
 //
 
 #import "ImageViewController.h"
-#import "TopPlacesTVC.h"
-#import "MostRecentPhotosTVC.h"
 
 @interface ImageViewController () <UIScrollViewDelegate>
 

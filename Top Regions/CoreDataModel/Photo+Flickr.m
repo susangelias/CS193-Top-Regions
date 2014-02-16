@@ -33,7 +33,6 @@
     else if ([matches count])
     {
         photo = [matches firstObject];
- //       NSLog(@"photo found who = %@, where = %@", photo.whoTook, photo.whereTook);
     }
     else
     {
@@ -47,12 +46,11 @@
         
         NSString *photographerName = [photoDictionary valueForKeyPath:FLICKR_PHOTO_OWNER];
         photo.whoTook = [Photographer photographerWithName:photographerName inManagedContext:context];
+        [photo.whoTook addPhotosObject:photo];
         
         NSString *placeID = [photoDictionary valueForKeyPath:FLICKR_PLACE_ID];
-        
-        photo.whereTook = [Region regionWithPlaceID:placeID withPhoto:photo];
-        
-   //     NSLog(@"created photo in core data %@", photo);
+        photo.placeID = placeID;
+        [Region regionWithPlaceID:placeID withPhoto:photo];
     }
     
     return photo;

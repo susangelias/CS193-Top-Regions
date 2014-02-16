@@ -19,6 +19,7 @@
 @property (nonatomic, retain) NSData * thumbnail;
 @property (nonatomic, retain) NSString * thumbnailURL;
 @property (nonatomic, retain) NSString * title;
+@property (nonatomic, retain) NSString * placeID;
 @property (nonatomic, retain) Region *whereTook;
 @property (nonatomic, retain) Photographer *whoTook;
 

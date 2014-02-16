@@ -13,9 +13,9 @@
 
 @interface Region : NSManagedObject
 
-@property (nonatomic, retain) NSString * placeID;
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSNumber * numberOfPhotographers;
+@property (nonatomic, retain) NSString * placeID;
 @property (nonatomic, retain) NSSet *photographers;
 @property (nonatomic, retain) NSSet *photos;
 @end

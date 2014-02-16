@@ -4,10 +4,10 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
     </dependencies>
     <scenes>
-        <!--Specific Place PhotosTVC-->
+        <!--Photos In Selected RegionCDTVC-->
         <scene sceneID="BH7-hR-lhS">
             <objects>
-                <tableViewController id="CQV-QS-e9l" customClass="SpecificPlacePhotosTVC" sceneMemberID="viewController">
+                <tableViewController id="CQV-QS-e9l" customClass="PhotosInSelectedRegionCDTVC" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="ko5-yM-usU">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -130,7 +130,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="CQV-QS-e9l" kind="push" identifier="SpecificPlacePhotos" id="5GB-tK-T67"/>
+                                    <segue destination="CQV-QS-e9l" kind="push" identifier="RegionSelected" id="5GB-tK-T67"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -216,11 +216,11 @@
             </objects>
             <point key="canvasLocation" x="950" y="138"/>
         </scene>
-        <!--Navigation Controller - Top Places-->
+        <!--Navigation Controller - Top Regions-->
         <scene sceneID="ydx-o4-QbD">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="kGt-wR-6bM" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Top Places" id="ogr-zu-Giw"/>
+                    <tabBarItem key="tabBarItem" title="Top Regions" id="ogr-zu-Giw"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="UTS-OC-7tG">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -261,6 +261,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="zdd-I5-edV"/>
+        <segue reference="iWd-uX-5y3"/>
     </inferredMetricsTieBreakers>
 </document>

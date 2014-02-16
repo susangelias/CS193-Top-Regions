@@ -9,6 +9,7 @@
 #import "TopRegionsTVC.h"
 #import "TopRegionsAppDelegate.h"
 #import "Region.h"
+#import "PhotosInSelectedRegionCDTVC.h"
 
 @interface TopRegionsTVC ()
 
@@ -94,4 +95,33 @@
     
     return cell;
 }
+
+
+#pragma mark - Navigation
+
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([sender isKindOfClass:[UITableViewCell class]])
+    {
+        // find out which row was selected
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+        
+        if (indexPath)
+        {
+            // are we doing the selected Region segue
+            if ([segue.identifier isEqualToString:@"RegionSelected"])
+            {
+                // is destination a PhotosInSelectedRegion Controller ?
+                if ([segue.destinationViewController isKindOfClass:[PhotosInSelectedRegionCDTVC class]])
+                {
+                    // pass the selected region to the destination controller
+                    PhotosInSelectedRegionCDTVC *destination = (PhotosInSelectedRegionCDTVC *)segue.destinationViewController;
+                    destination.selectedRegion = [self.fetchedResultsController objectAtIndexPath:indexPath];
+                    
+                }
+            }
+        }
+    }
+}
+
 @end

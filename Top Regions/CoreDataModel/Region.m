@@ -13,9 +13,9 @@
 
 @implementation Region
 
-@dynamic placeID;
 @dynamic name;
 @dynamic numberOfPhotographers;
+@dynamic placeID;
 @dynamic photographers;
 @dynamic photos;
 
