@@ -31,6 +31,8 @@
 
 - (void)setFetchedResultsController:(NSFetchedResultsController *)newfrc
 {
+    self.debug = YES;
+    
     NSFetchedResultsController *oldfrc = _fetchedResultsController;
     if (newfrc != oldfrc) {
         _fetchedResultsController = newfrc;
@@ -63,6 +65,7 @@
         id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
         rows = [sectionInfo numberOfObjects];
     }
+    NSLog(@"section %d has rows = %d",section,  rows);
     return rows;
 }
 

@@ -106,18 +106,18 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
         
         // OPEN OR CREATE OUR MANAGED DOCUMENT
         if ([[NSFileManager defaultManager] fileExistsAtPath:[url path]])
-        {
+        {   // open document (database)
             [_topRegionsManagedDocument openWithCompletionHandler:^(BOOL success) {
                 if (success) [self managedDocumentIsReady];
                 if (!success) NSLog(@"Couldn't open document at %@", url);
             }];
         } else
-        {
+        {   // create document (database in our case)
             [_topRegionsManagedDocument saveToURL:url
                                  forSaveOperation:UIDocumentSaveForCreating
                                 completionHandler:^(BOOL success) {
                                     if (success) [self managedDocumentIsReady];
-                                    if (!success) NSLog(@"Couldn't open document at %@", url);
+                                    if (!success) NSLog(@"Couldn't create/open document at %@", url);
                                 }];
         }
     }

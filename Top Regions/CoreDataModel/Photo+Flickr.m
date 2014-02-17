@@ -17,41 +17,44 @@
 + (Photo *)photoWithFlickrInfo:(NSDictionary *)photoDictionary
         inManagedObjectContext: (NSManagedObjectContext *)context
 {
-    Photo *photo = nil;
+    __block Photo *photo = nil;
     
     NSString *photoID = [photoDictionary valueForKeyPath:FLICKR_PHOTO_ID];
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Photo"];
     request.predicate = [NSPredicate predicateWithFormat:@"photoID = %@", photoID];
     
-    NSError *error;
-    NSArray *matches = [context executeFetchRequest:request error:&error];
-    
-    if (!matches || error || ([matches count] > 1))
-    {
-        // handle error
-    }
-    else if ([matches count])
-    {
-        photo = [matches firstObject];
-    }
-    else
-    {
-        photo = [NSEntityDescription insertNewObjectForEntityForName:@"Photo" inManagedObjectContext:context];
-        photo.photoID = photoID;
-        photo.title = [photoDictionary valueForKeyPath:FLICKR_PHOTO_TITLE];
-        photo.subtitle = [photoDictionary valueForKeyPath:FLICKR_PHOTO_DESCRIPTION];
-        photo.imageURL = [[FlickrFetcher URLforPhoto:photoDictionary format:FlickrPhotoFormatLarge]absoluteString];
-        photo.thumbnail = nil;
-        photo.thumbnailURL = nil;
-        
-        NSString *photographerName = [photoDictionary valueForKeyPath:FLICKR_PHOTO_OWNER];
-        photo.whoTook = [Photographer photographerWithName:photographerName inManagedContext:context];
-        [photo.whoTook addPhotosObject:photo];
-        
-        NSString *placeID = [photoDictionary valueForKeyPath:FLICKR_PLACE_ID];
-        photo.placeID = placeID;
-        [Region regionWithPlaceID:placeID withPhoto:photo];
-    }
+    __block NSArray *matches;
+    __block NSError *error;
+    [context performBlock:^{
+        matches = [context executeFetchRequest:request error:&error];
+
+        if (!matches || error || ([matches count] > 1))
+        {
+            // handle error
+        }
+        else if ([matches count])
+        {
+            photo = [matches firstObject];
+        }
+        else
+        {
+            photo = [NSEntityDescription insertNewObjectForEntityForName:@"Photo" inManagedObjectContext:context];
+            photo.photoID = photoID;
+            photo.title = [photoDictionary valueForKeyPath:FLICKR_PHOTO_TITLE];
+            photo.subtitle = [photoDictionary valueForKeyPath:FLICKR_PHOTO_DESCRIPTION];
+            photo.imageURL = [[FlickrFetcher URLforPhoto:photoDictionary format:FlickrPhotoFormatLarge]absoluteString];
+            photo.thumbnail = nil;
+            photo.thumbnailURL = nil;
+            
+            NSString *photographerName = [photoDictionary valueForKeyPath:FLICKR_PHOTO_OWNER];
+            photo.whoTook = [Photographer photographerWithName:photographerName inManagedContext:context];
+            [photo.whoTook addPhotosObject:photo];
+            
+            NSString *placeID = [photoDictionary valueForKeyPath:FLICKR_PLACE_ID];
+            photo.placeID = placeID;
+            [Region regionWithPlaceID:placeID withPhoto:photo];
+        }
+    }];
     
     return photo;
 }

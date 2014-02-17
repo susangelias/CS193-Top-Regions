@@ -235,11 +235,11 @@
 			children = (
 				C09F567118AE91DA0088A321 /* Region+create.h */,
 				C09F567218AE91DA0088A321 /* Region+create.m */,
-				C03CDA2818B050E90054D56D /* Region.h */,
 				C03CDA2E18B050EA0054D56D /* Photographer.h */,
 				C03CDA2F18B050EA0054D56D /* Photographer.m */,
 				C03CDA2B18B050EA0054D56D /* Photo.h */,
 				C03CDA2C18B050EA0054D56D /* Photo.m */,
+				C03CDA2818B050E90054D56D /* Region.h */,
 				C03CDA2918B050E90054D56D /* Region.m */,
 				C05BFF3418ABF9F800038902 /* TopRegionsModel.xcdatamodeld */,
 				C0AF1A8018ADC70F00B4D604 /* Photo+Flickr.h */,

@@ -49,32 +49,44 @@
                     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name = %@", name];
                     [request setPredicate:predicate];
                     
-                    NSError *error;
-                    NSArray *matches = [context executeFetchRequest:request error:&error];
-                    
-                    if ((matches == nil) || ([matches count] > 1))
-                    {
-                        // handle error
-                    }
-                    else if ([matches count] == 0)
-                    {
-                        // region doesn't exist - create one
-                        region = [NSEntityDescription insertNewObjectForEntityForName:@"Region"
-                                                                     inManagedObjectContext:context];
-                        region.name = name;
-                        region.placeID = placeID;
-                        [region addPhotosObject:photo];
-                        [region addPhotographersObject:photo.whoTook];
-                        region.numberOfPhotographers= [NSNumber numberWithInt:(int)1];
-                    }
-                    else
-                    {
-                        // region exists 
-                        region = [matches firstObject];
-                        [region addPhotosObject:photo];
-                        [region addPhotographersObject:photo.whoTook];
-                        region.numberOfPhotographers= [NSNumber numberWithInt:[region.numberOfPhotographers intValue] + (int)1];
-                    }
+                    __block NSArray *matches;
+                    [context performBlock:^{
+                        NSError *error;
+                        matches = [context executeFetchRequest:request error:&error];
+                        
+                        if ((matches == nil) || ([matches count] > 1))
+                        {
+                            // handle error
+                        }
+                        else if ([matches count] == 0)
+                        {
+                            // region doesn't exist - create one
+                            region = [NSEntityDescription insertNewObjectForEntityForName:@"Region"
+                                                                         inManagedObjectContext:context];
+                            region.name = name;
+                            region.placeID = placeID;
+                            [region addPhotosObject:photo];
+                            Photographer *photographer = photo.whoTook;
+                            if (photographer) {
+                                [region addPhotographersObject:photographer];
+                                region.numberOfPhotographers= [NSNumber numberWithInt:(int)1];
+                            }
+                        }
+                        else
+                        {
+                            // region exists 
+                            region = [matches firstObject];
+                            [region addPhotosObject:photo];
+                            if (![region.photographers containsObject:photo.whoTook]) {
+                                Photographer *photographer = photo.whoTook;
+                                if (photographer) {
+                                    [region addPhotographersObject:photographer];
+                                    region.numberOfPhotographers= [NSNumber numberWithInt:[region.numberOfPhotographers intValue] + (int)1];
+                                }
+                           }
+                        }
+                    }];
+
                 }
             }
         });

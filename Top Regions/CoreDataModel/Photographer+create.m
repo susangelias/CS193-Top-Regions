@@ -17,7 +17,7 @@
 + (Photographer *)photographerWithName: (NSString *)name
                       inManagedContext:(NSManagedObjectContext *)context
 {
-    Photographer *photographer = nil;
+    __block Photographer *photographer = nil;
     
     if (context)
     {
@@ -29,27 +29,31 @@
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name = %@", name];
         [request setPredicate:predicate];
         
-        NSError *error;
-        NSArray *matches = [context executeFetchRequest:request error:&error];
+        __block NSArray *matches;
+        __block NSError *error;
+        [context performBlock:^{
+            matches = [context executeFetchRequest:request error:&error];
         
-        if ((matches == nil) || ([matches count] > 1))
-        {
-            // handle error
-        }
-        else if ([matches count] == 0)
-        {
-            // photographer doesn't exist - create one
-            photographer = [NSEntityDescription insertNewObjectForEntityForName:@"Photographer"
-                                                         inManagedObjectContext:context];
-            photographer.name = name;
-        }
-        else
-        {
-            // photographer exists
-            photographer = [matches firstObject];
-        }
+            if ((matches == nil) || ([matches count] > 1))
+            {
+                // handle error
+            }
+            else if ([matches count] == 0)
+            {
+                // photographer doesn't exist - create one
+                photographer = [NSEntityDescription insertNewObjectForEntityForName:@"Photographer"
+                                                             inManagedObjectContext:context];
+                photographer.name = name;
+            }
+            else
+            {
+                // photographer exists
+                photographer = [matches firstObject];
+            }
+        }];
+        
     }
-    
+   
     return photographer;
     
 }
