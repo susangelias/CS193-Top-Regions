@@ -31,7 +31,7 @@
         
         __block NSArray *matches;
         __block NSError *error;
-        [context performBlock:^{
+        [context performBlockAndWait:^{
             matches = [context executeFetchRequest:request error:&error];
         
             if ((matches == nil) || ([matches count] > 1))

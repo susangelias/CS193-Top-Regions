@@ -50,7 +50,7 @@
                     [request setPredicate:predicate];
                     
                     __block NSArray *matches;
-                    [context performBlock:^{
+                    [context performBlockAndWait:^{
                         NSError *error;
                         matches = [context executeFetchRequest:request error:&error];
                         
@@ -65,7 +65,7 @@
                                                                          inManagedObjectContext:context];
                             region.name = name;
                             region.placeID = placeID;
-                            [region addPhotosObject:photo];
+                     //       [region addPhotosObject:photo];
                             Photographer *photographer = photo.whoTook;
                             if (photographer) {
                                 [region addPhotographersObject:photographer];
@@ -76,7 +76,7 @@
                         {
                             // region exists 
                             region = [matches firstObject];
-                            [region addPhotosObject:photo];
+                  //          [region addPhotosObject:photo];
                             if (![region.photographers containsObject:photo.whoTook]) {
                                 Photographer *photographer = photo.whoTook;
                                 if (photographer) {
