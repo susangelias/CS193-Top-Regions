@@ -10,7 +10,7 @@
 #import "Region.h"
 
 
-@interface PhotosInSelectedRegionCDTVC : UITableViewController
+@interface PhotosInSelectedRegionCDTVC : CoreDataTableViewController
 
 @property (nonatomic, strong) Region *selectedRegion;
 @property (nonatomic, strong) NSArray *regionPhotos;
