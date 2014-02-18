@@ -36,7 +36,7 @@
     
     // Set up fetch request for this view from our core data
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Photo"];
-    request.predicate = [NSPredicate predicateWithFormat:@"placeID = %@", self.selectedRegion.placeID];
+    request.predicate = [NSPredicate predicateWithFormat:@"regionName =  %@", self.selectedRegion.name   ];
     NSSortDescriptor *byTitle = [NSSortDescriptor sortDescriptorWithKey:@"title"
                                                               ascending:YES
                                                                selector:@selector(localizedStandardCompare:)];

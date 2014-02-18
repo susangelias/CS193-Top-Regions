@@ -64,26 +64,27 @@
                             region = [NSEntityDescription insertNewObjectForEntityForName:@"Region"
                                                                          inManagedObjectContext:context];
                             region.name = name;
-                            region.placeID = placeID;
                      //       [region addPhotosObject:photo];
                             Photographer *photographer = photo.whoTook;
                             if (photographer) {
                                 [region addPhotographersObject:photographer];
                                 region.numberOfPhotographers= [NSNumber numberWithInt:(int)1];
                             }
+                            photo.regionName = name;
                         }
                         else
                         {
                             // region exists 
                             region = [matches firstObject];
                   //          [region addPhotosObject:photo];
-                            if (![region.photographers containsObject:photo.whoTook]) {
+                            if (![region.photographers containsObject:photo.whoTook]) {     // photographer is not already on the regions list of photographers
                                 Photographer *photographer = photo.whoTook;
                                 if (photographer) {
                                     [region addPhotographersObject:photographer];
                                     region.numberOfPhotographers= [NSNumber numberWithInt:[region.numberOfPhotographers intValue] + (int)1];
                                 }
                            }
+                            photo.regionName = name;
                         }
                     }];
 

@@ -15,7 +15,6 @@
 
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSNumber * numberOfPhotographers;
-@property (nonatomic, retain) NSString * placeID;
 @property (nonatomic, retain) NSSet *photographers;
 @end
 

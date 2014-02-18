@@ -14,7 +14,6 @@
 
 @dynamic name;
 @dynamic numberOfPhotographers;
-@dynamic placeID;
 @dynamic photographers;
 
 @end

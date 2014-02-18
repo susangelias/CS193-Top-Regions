@@ -8,9 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		C03CDA2718B0205D0054D56D /* PhotosInSelectedRegionCDTVC.m in Sources */ = {isa = PBXBuildFile; fileRef = C03CDA2618B0205D0054D56D /* PhotosInSelectedRegionCDTVC.m */; };
-		C049563818B2BDC800666783 /* Region.m in Sources */ = {isa = PBXBuildFile; fileRef = C049563718B2BDC800666783 /* Region.m */; };
-		C049563B18B2BDC800666783 /* Photographer.m in Sources */ = {isa = PBXBuildFile; fileRef = C049563A18B2BDC800666783 /* Photographer.m */; };
-		C049563E18B2BDC800666783 /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = C049563D18B2BDC800666783 /* Photo.m */; };
+		C049565918B2ECFB00666783 /* Region.m in Sources */ = {isa = PBXBuildFile; fileRef = C049565818B2ECFB00666783 /* Region.m */; };
+		C049565C18B2ECFC00666783 /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = C049565B18B2ECFC00666783 /* Photo.m */; };
+		C049565F18B2ECFC00666783 /* Photographer.m in Sources */ = {isa = PBXBuildFile; fileRef = C049565E18B2ECFC00666783 /* Photographer.m */; };
 		C05BFEDC18ABE53600038902 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C05BFEDB18ABE53600038902 /* Foundation.framework */; };
 		C05BFEDE18ABE53600038902 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C05BFEDD18ABE53600038902 /* CoreGraphics.framework */; };
 		C05BFEE018ABE53600038902 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C05BFEDF18ABE53600038902 /* UIKit.framework */; };
@@ -48,12 +48,12 @@
 /* Begin PBXFileReference section */
 		C03CDA2518B0205D0054D56D /* PhotosInSelectedRegionCDTVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhotosInSelectedRegionCDTVC.h; path = CoreDataModel/PhotosInSelectedRegionCDTVC.h; sourceTree = "<group>"; };
 		C03CDA2618B0205D0054D56D /* PhotosInSelectedRegionCDTVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PhotosInSelectedRegionCDTVC.m; path = CoreDataModel/PhotosInSelectedRegionCDTVC.m; sourceTree = "<group>"; };
-		C049563618B2BDC800666783 /* Region.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Region.h; path = CoreDataModel/Region.h; sourceTree = "<group>"; };
-		C049563718B2BDC800666783 /* Region.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Region.m; path = CoreDataModel/Region.m; sourceTree = "<group>"; };
-		C049563918B2BDC800666783 /* Photographer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Photographer.h; path = CoreDataModel/Photographer.h; sourceTree = "<group>"; };
-		C049563A18B2BDC800666783 /* Photographer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Photographer.m; path = CoreDataModel/Photographer.m; sourceTree = "<group>"; };
-		C049563C18B2BDC800666783 /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Photo.h; path = CoreDataModel/Photo.h; sourceTree = "<group>"; };
-		C049563D18B2BDC800666783 /* Photo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Photo.m; path = CoreDataModel/Photo.m; sourceTree = "<group>"; };
+		C049565718B2ECFB00666783 /* Region.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Region.h; path = CoreDataModel/Region.h; sourceTree = "<group>"; };
+		C049565818B2ECFB00666783 /* Region.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Region.m; path = CoreDataModel/Region.m; sourceTree = "<group>"; };
+		C049565A18B2ECFC00666783 /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Photo.h; path = CoreDataModel/Photo.h; sourceTree = "<group>"; };
+		C049565B18B2ECFC00666783 /* Photo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Photo.m; path = CoreDataModel/Photo.m; sourceTree = "<group>"; };
+		C049565D18B2ECFC00666783 /* Photographer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Photographer.h; path = CoreDataModel/Photographer.h; sourceTree = "<group>"; };
+		C049565E18B2ECFC00666783 /* Photographer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Photographer.m; path = CoreDataModel/Photographer.m; sourceTree = "<group>"; };
 		C05BFED818ABE53600038902 /* Top Regions.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Top Regions.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C05BFEDB18ABE53600038902 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C05BFEDD18ABE53600038902 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -235,13 +235,13 @@
 			children = (
 				C09F567118AE91DA0088A321 /* Region+create.h */,
 				C09F567218AE91DA0088A321 /* Region+create.m */,
+				C049565718B2ECFB00666783 /* Region.h */,
+				C049565D18B2ECFC00666783 /* Photographer.h */,
+				C049565E18B2ECFC00666783 /* Photographer.m */,
+				C049565A18B2ECFC00666783 /* Photo.h */,
+				C049565B18B2ECFC00666783 /* Photo.m */,
+				C049565818B2ECFB00666783 /* Region.m */,
 				C05BFF3418ABF9F800038902 /* TopRegionsModel.xcdatamodeld */,
-				C049563618B2BDC800666783 /* Region.h */,
-				C049563718B2BDC800666783 /* Region.m */,
-				C049563918B2BDC800666783 /* Photographer.h */,
-				C049563A18B2BDC800666783 /* Photographer.m */,
-				C049563C18B2BDC800666783 /* Photo.h */,
-				C049563D18B2BDC800666783 /* Photo.m */,
 				C0AF1A8018ADC70F00B4D604 /* Photo+Flickr.h */,
 				C0AF1A8118ADC70F00B4D604 /* Photo+Flickr.m */,
 				C09F566E18AE508F0088A321 /* Photographer+create.h */,
@@ -349,14 +349,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C049563E18B2BDC800666783 /* Photo.m in Sources */,
-				C049563B18B2BDC800666783 /* Photographer.m in Sources */,
+				C049565F18B2ECFC00666783 /* Photographer.m in Sources */,
+				C049565C18B2ECFC00666783 /* Photo.m in Sources */,
 				C09F567018AE508F0088A321 /* Photographer+create.m in Sources */,
 				C03CDA2718B0205D0054D56D /* PhotosInSelectedRegionCDTVC.m in Sources */,
 				C0AF1A8218ADC70F00B4D604 /* Photo+Flickr.m in Sources */,
 				C09F567318AE91DA0088A321 /* Region+create.m in Sources */,
 				C05BFEF518ABE53600038902 /* TopRegionsTVC.m in Sources */,
-				C049563818B2BDC800666783 /* Region.m in Sources */,
+				C049565918B2ECFB00666783 /* Region.m in Sources */,
 				C05BFEEC18ABE53600038902 /* TopRegionsAppDelegate.m in Sources */,
 				C05BFF3318ABF0DA00038902 /* ImageViewController.m in Sources */,
 				C05BFF3618ABF9F800038902 /* TopRegionsModel.xcdatamodeld in Sources */,

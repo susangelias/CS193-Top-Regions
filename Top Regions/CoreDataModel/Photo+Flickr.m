@@ -52,7 +52,7 @@
             
             NSString *placeID = [photoDictionary valueForKeyPath:FLICKR_PLACE_ID];
             photo.placeID = placeID;
-            [Region regionWithPlaceID:placeID withPhoto:photo];
+            photo.regionName = [Region regionWithPlaceID:placeID withPhoto:photo].name;
         }
     }];
     
