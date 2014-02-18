@@ -30,14 +30,13 @@
     if (!self.context)
     {
         // context not set up yet so sign up to receive notification when it is ready
-        NSLog(@"signing up to receiver context ready notification from app delegate");
         __block TopRegionsTVC *weakSelf = self;  // avoid a retain cycle
         [[NSNotificationCenter defaultCenter] addObserverForName:ContextReady
                                                           object:nil
                                                            queue:nil
                                                       usingBlock:^(NSNotification *note) {
                                                           weakSelf.context = note.userInfo [PhotoDatabaseAvailabilityContext];
-                                                          NSLog(@"received context from appDelegate %@", weakSelf.context);
+                                                      //    NSLog(@"received context from appDelegate %@", weakSelf.context);
                                                       }];
       }
     else

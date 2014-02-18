@@ -99,7 +99,7 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
         NSString *documentName = @"TopRegionsManagedDocument";
         NSURL *url = [documentsDirectory URLByAppendingPathComponent:documentName];
         
-        NSLog(@"url of managed document %@", url);
+   //     NSLog(@"url of managed document %@", url);
         
         // INSTANTIATE OUR MANAGED DOCUMENT IF NEEDED
         _topRegionsManagedDocument = [[UIManagedDocument alloc]initWithFileURL:url];
@@ -135,7 +135,7 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
         self.context = self.topRegionsManagedDocument.managedObjectContext;
         
         // Send the joyful proclamation that the context is ready for prime time!
-        NSLog(@"posting notitication that context is ready ");
+   //     NSLog(@"posting notitication that context is ready ");
         NSDictionary *userInfo = self.context ? @{PhotoDatabaseAvailabilityContext : self.context} : nil;
         [[NSNotificationCenter defaultCenter] postNotificationName:ContextReady
                                                             object:self
