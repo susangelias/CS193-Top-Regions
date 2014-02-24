@@ -31,31 +31,34 @@
 
 - (void) viewDidLoad
 {
-    // set title to the region name
-    self.navigationItem.title = self.selectedRegion.name;
-    
-    // Set up fetch request for this view from our core data
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Photo"];
-    request.predicate = [NSPredicate predicateWithFormat:@"ANY whereTook.region.name =  %@", self.selectedRegion.name   ];
-    NSSortDescriptor *byUploadDate = [NSSortDescriptor sortDescriptorWithKey:@"uploadDate"
-                                                              ascending:NO
-                                                               selector:@selector(compare:)];
-    /*
-    NSSortDescriptor *bySubTitle = [NSSortDescriptor sortDescriptorWithKey:@"subtitle"
-                                                                 ascending:YES
-                                                                  selector:@selector(localizedStandardCompare:)];
-    NSSortDescriptor *byPhotographer = [NSSortDescriptor sortDescriptorWithKey:@"whoTook"
+    if (self.selectedRegion) {
+        // set title to the region name
+        self.navigationItem.title = self.selectedRegion.name;
+        
+        // Set up fetch request for this view from our core data
+        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Photo"];
+        request.predicate = [NSPredicate predicateWithFormat:@"ANY whereTook.region.name =  %@", self.selectedRegion.name   ];
+        NSSortDescriptor *byUploadDate = [NSSortDescriptor sortDescriptorWithKey:@"uploadDate"
+                                                                  ascending:NO
+                                                                   selector:@selector(compare:)];
+        /*
+        NSSortDescriptor *bySubTitle = [NSSortDescriptor sortDescriptorWithKey:@"subtitle"
                                                                      ascending:YES
                                                                       selector:@selector(localizedStandardCompare:)];
-     */
-    request.sortDescriptors = @[byUploadDate];
+        NSSortDescriptor *byPhotographer = [NSSortDescriptor sortDescriptorWithKey:@"whoTook"
+                                                                         ascending:YES
+                                                                          selector:@selector(localizedStandardCompare:)];
+         */
+        request.sortDescriptors = @[byUploadDate];
+        
+        self.fetchedResultsController = [[NSFetchedResultsController alloc]initWithFetchRequest:request
+                                                                           managedObjectContext:self.selectedRegion.managedObjectContext                                                                        sectionNameKeyPath:nil
+                                                                                      cacheName:nil ];
+    }
+    else {
+        NSLog(@"Segue failed to set selectedRegion");
+    }
     
-    self.fetchedResultsController = [[NSFetchedResultsController alloc]initWithFetchRequest:request
-                                                                       managedObjectContext:self.selectedRegion.managedObjectContext                                                                        sectionNameKeyPath:nil
-                                                                                  cacheName:nil ];
-    
-//    NSError *error;
-//    NSLog(@"number of photos in region %ul", [self.selectedRegion.managedObjectContext  countForFetchRequest:request error:&error]);
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -131,6 +134,9 @@
                     ImageViewController *destination = (ImageViewController *)segue.destinationViewController;
                     Photo *photo = [self.fetchedResultsController objectAtIndexPath:indexPath];
                     destination.imageURL = [NSURL URLWithString:photo.imageURL];
+                    
+                    // set this photo's viewed date for the Most Recent Views controller
+                    [photo setViewedDate:[NSDate date]];
                    
                     // set the title of the destination controller with the title of the photo
                     destination.navigationItem.title = photo.title;

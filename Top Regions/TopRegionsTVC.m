@@ -93,9 +93,10 @@
 }
 
 
+
 #pragma mark - Navigation
 
-- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (void) na:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([sender isKindOfClass:[UITableViewCell class]])
     {
@@ -119,5 +120,15 @@
         }
     }
 }
+
+
+
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    // ADDED THIS BECAUSE THE DIRECT SEGUE METHOD ABOVE STOPPED BEING CALLED
+    [self na:segue sender:sender];
+    
+}
+
 
 @end

@@ -22,7 +22,7 @@ NSString * const taskKey = @"taskKey";
 @interface TopRegionsAppDelegate() <NSURLSessionDownloadDelegate>
 
 @property (strong, nonatomic) UIManagedDocument *topRegionsManagedDocument;
-@property (nonatomic, strong) NSManagedObjectContext *context;
+
 @property (nonatomic, strong) NSURLSession *flickrDownloadSession;
 @property (copy, nonatomic) void (^flickrDownloadBackgroundURLSessionCompletionHandler)();
 @property (nonatomic, strong) NSTimer *flickrForegroundFetchPhotoTimer;
