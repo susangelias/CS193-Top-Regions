@@ -50,6 +50,10 @@
             photo.imageURL = [[FlickrFetcher URLforPhoto:photoDictionary format:FlickrPhotoFormatLarge]absoluteString];
             photo.thumbnail = nil;
             photo.thumbnailURL = [[FlickrFetcher URLforPhoto:photoDictionary format:FlickrPhotoFormatSquare]absoluteString];
+            double uploadTime = [[photoDictionary valueForKey:FLICKR_PHOTO_UPLOAD_DATE]doubleValue];
+      //      NSLog(@"upLoadDate %f",uploadTime);
+            photo.uploadDate = [NSDate dateWithTimeIntervalSince1970:uploadTime];
+      //      NSLog(@"photo.uploadDate %@", photo.uploadDate);
             
             NSString *photographerName = [photoDictionary valueForKeyPath:FLICKR_PHOTO_OWNER];
             photo.whoTook = [Photographer photographerWithName:photographerName inManagedContext:context];

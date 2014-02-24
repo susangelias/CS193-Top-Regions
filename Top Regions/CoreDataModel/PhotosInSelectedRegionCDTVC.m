@@ -37,16 +37,18 @@
     // Set up fetch request for this view from our core data
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Photo"];
     request.predicate = [NSPredicate predicateWithFormat:@"ANY whereTook.region.name =  %@", self.selectedRegion.name   ];
-    NSSortDescriptor *byTitle = [NSSortDescriptor sortDescriptorWithKey:@"title"
-                                                              ascending:YES
-                                                               selector:@selector(localizedStandardCompare:)];
+    NSSortDescriptor *byUploadDate = [NSSortDescriptor sortDescriptorWithKey:@"uploadDate"
+                                                              ascending:NO
+                                                               selector:@selector(compare:)];
+    /*
     NSSortDescriptor *bySubTitle = [NSSortDescriptor sortDescriptorWithKey:@"subtitle"
                                                                  ascending:YES
                                                                   selector:@selector(localizedStandardCompare:)];
     NSSortDescriptor *byPhotographer = [NSSortDescriptor sortDescriptorWithKey:@"whoTook"
                                                                      ascending:YES
                                                                       selector:@selector(localizedStandardCompare:)];
-    request.sortDescriptors = @[byTitle];
+     */
+    request.sortDescriptors = @[byUploadDate];
     
     self.fetchedResultsController = [[NSFetchedResultsController alloc]initWithFetchRequest:request
                                                                        managedObjectContext:self.selectedRegion.managedObjectContext                                                                        sectionNameKeyPath:nil
