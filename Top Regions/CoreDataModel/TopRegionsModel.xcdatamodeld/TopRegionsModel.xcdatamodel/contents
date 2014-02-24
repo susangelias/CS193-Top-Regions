@@ -3,12 +3,13 @@
     <entity name="Photo" representedClassName="Photo" syncable="YES">
         <attribute name="imageURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="photoID" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="placeID" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="regionName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="subtitle" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="thumbnail" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="thumbnailURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="uploadDate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="viewedDate" optional="YES" attributeType="Date" syncable="YES"/>
+        <relationship name="whereTook" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PlaceID" inverseName="photo" inverseEntity="PlaceID" syncable="YES"/>
         <relationship name="whoTook" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Photographer" inverseName="photos" inverseEntity="Photographer" syncable="YES"/>
     </entity>
     <entity name="Photographer" representedClassName="Photographer" syncable="YES">
@@ -16,14 +17,21 @@
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="whoTook" inverseEntity="Photo" syncable="YES"/>
         <relationship name="regions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Region" inverseName="photographers" inverseEntity="Region" syncable="YES"/>
     </entity>
+    <entity name="PlaceID" representedClassName="PlaceID" syncable="YES">
+        <attribute name="placeID" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="photo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Photo" inverseName="whereTook" inverseEntity="Photo" syncable="YES"/>
+        <relationship name="region" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Region" inverseName="placeIDs" inverseEntity="Region" syncable="YES"/>
+    </entity>
     <entity name="Region" representedClassName="Region" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="numberOfPhotographers" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <relationship name="photographers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photographer" inverseName="regions" inverseEntity="Photographer" syncable="YES"/>
+        <relationship name="placeIDs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="PlaceID" inverseName="region" inverseEntity="PlaceID" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Photo" positionX="-306" positionY="-163" width="128" height="178"/>
+        <element name="Photo" positionX="-290" positionY="-160" width="128" height="193"/>
         <element name="Photographer" positionX="81" positionY="-360" width="128" height="90"/>
-        <element name="Region" positionX="-405" positionY="-360" width="128" height="88"/>
+        <element name="PlaceID" positionX="-603" positionY="-169" width="128" height="88"/>
+        <element name="Region" positionX="-396" positionY="-342" width="171" height="103"/>
     </elements>
 </model>

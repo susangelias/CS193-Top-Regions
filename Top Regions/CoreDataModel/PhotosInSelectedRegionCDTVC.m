@@ -36,7 +36,7 @@
     
     // Set up fetch request for this view from our core data
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Photo"];
-    request.predicate = [NSPredicate predicateWithFormat:@"regionName =  %@", self.selectedRegion.name   ];
+    request.predicate = [NSPredicate predicateWithFormat:@"ANY whereTook.region.name =  %@", self.selectedRegion.name   ];
     NSSortDescriptor *byTitle = [NSSortDescriptor sortDescriptorWithKey:@"title"
                                                               ascending:YES
                                                                selector:@selector(localizedStandardCompare:)];
@@ -78,13 +78,34 @@
     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"Flickr Photo Cell"];
     
     // get photo out of model
-    Photo *photo = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    __block Photo *photo = [self.fetchedResultsController objectAtIndexPath:indexPath];
     cell.textLabel.text = photo.title;
     cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", photo.subtitle];
+    if (photo.thumbnail) {
+        cell.imageView.image = [UIImage imageWithData:photo.thumbnail];
+    }
+    else {
+        // Fetch thumbnail image from server
+        // create a non-main queue to do the fetch on
+        if (photo.thumbnailURL)    // make sure I have a valid URL before starting
+        {
+            NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:photo.thumbnailURL]];
+            NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+            NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
+            NSURLSessionDownloadTask *task = [session downloadTaskWithRequest:request
+                completionHandler:^(NSURL *localFile, NSURLResponse *response, NSError *error) {
+                    if (!error)     // make sure there was no error during the download
+                    {
+                        [photo setThumbnail:[NSData dataWithContentsOfURL:localFile]];
+                    }
+                }];
+            [task resume];
+        }
+
+    }
     
     return cell;
 }
-
 
 
 #pragma mark - Navigation

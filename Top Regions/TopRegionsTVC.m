@@ -39,13 +39,6 @@
                                                       //    NSLog(@"received context from appDelegate %@", weakSelf.context);
                                                       }];
       }
-    else
-    {
-        // REMOVE SELF FROM NOTIFICATION REGARDING CONTEXT READY
-        // since I don't use any other notifications just remove from all notifications
-#warning figure out when to remove self from notification center
-        [[NSNotificationCenter defaultCenter] removeObserver:self];
-    }
 
 }
 
@@ -53,6 +46,10 @@
 {
     _context = context;
     
+    // REMOVE SELF FROM NOTIFICATION REGARDING CONTEXT READY
+    // since I don't use any other notifications just remove from all notifications
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+
     // Set up fetch request for this view from our core data
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Region"];
     request.predicate = nil;

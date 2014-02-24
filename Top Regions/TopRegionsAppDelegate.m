@@ -9,10 +9,15 @@
 #import "TopRegionsAppDelegate.h"
 #import "FlickrFetcher.h"
 #import "Photo+Flickr.h"
+#import "Region+create.h"
+#import "PlaceID.h"
 
-
-
+// NOTIFICATION IDENTIFIERS
 NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotification";
+
+// DICTIONARY KEYS
+NSString * const placeIDKey = @"placeID";
+NSString * const taskKey = @"taskKey";
 
 @interface TopRegionsAppDelegate() <NSURLSessionDownloadDelegate>
 
@@ -20,8 +25,10 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
 @property (nonatomic, strong) NSManagedObjectContext *context;
 @property (nonatomic, strong) NSURLSession *flickrDownloadSession;
 @property (copy, nonatomic) void (^flickrDownloadBackgroundURLSessionCompletionHandler)();
-@property (nonatomic, strong) NSTimer *flickrForegroundFetchTimer;
-
+@property (nonatomic, strong) NSTimer *flickrForegroundFetchPhotoTimer;
+@property (nonatomic, strong) NSMutableArray *placeIDManagedObjectsWithoutRegionName;
+@property (nonatomic, strong) NSMutableArray *placeIDManagedObjectsWaitingForRegionResults;
+@property (nonatomic, strong) NSTimer *flickrForegroundFetchPlaceTimer;
 
 @end
 
@@ -29,6 +36,14 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
 
 
 #pragma mark    AppDelegate Methods
+
+- (NSMutableArray *)placeIDManagedObjectsWaitingForRegionResults
+{
+    if (!_placeIDManagedObjectsWaitingForRegionResults) {
+        _placeIDManagedObjectsWaitingForRegionResults = [[NSMutableArray alloc]init];
+    }
+    return _placeIDManagedObjectsWaitingForRegionResults;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -99,7 +114,7 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
         NSString *documentName = @"TopRegionsManagedDocument";
         NSURL *url = [documentsDirectory URLByAppendingPathComponent:documentName];
         
-   //     NSLog(@"url of managed document %@", url);
+        NSLog(@"url of managed document %@", url);
         
         // INSTANTIATE OUR MANAGED DOCUMENT IF NEEDED
         _topRegionsManagedDocument = [[UIManagedDocument alloc]initWithFileURL:url];
@@ -136,35 +151,65 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
         
         // Send the joyful proclamation that the context is ready for prime time!
    //     NSLog(@"posting notitication that context is ready ");
-        NSDictionary *userInfo = self.context ? @{PhotoDatabaseAvailabilityContext : self.context} : nil;
+        NSMutableDictionary *userInfo = [self.context ? @{PhotoDatabaseAvailabilityContext : self.context} : nil mutableCopy];
         [[NSNotificationCenter defaultCenter] postNotificationName:ContextReady
                                                             object:self
                                                           userInfo:userInfo];
         
         // Get the initial data download going
-        [self startFlickrFetch];
+        NSMutableDictionary *taskInfo = [[NSDictionary dictionaryWithObjectsAndKeys:FLICKR_PHOTO_TASK, @"taskKey", nil]mutableCopy];
+        [self startFlickrFetchWithDescription:taskInfo];
         
-        // Set up a timer to keep fetches going when we are in the foreground
-        self.flickrForegroundFetchTimer = [NSTimer scheduledTimerWithTimeInterval:FOREGROUND_FLICKR_FETCH_INTERVAL
+        // Set up a timer to keep PHOTO fetches going when we are in the foreground
+        self.flickrForegroundFetchPhotoTimer = [NSTimer scheduledTimerWithTimeInterval:FOREGROUND_FLICKR_PHOTO_FETCH_INTERVAL
                                                                            target:self
-                                                                         selector:@selector(startFlickrFetch)
-                                                                         userInfo:nil
+                                                                         selector:@selector(handlePhotoTimer:)
+                                                                         userInfo:taskInfo
                                                                           repeats:YES];
     }
 }
 
 #pragma mark Flickr Fetching
 
-- (void) startFlickrFetch
+- (NSURLSession *)flickrDownloadSession // the NSURLSession we will use to fetch Flickr data in the background
 {
+    if (!_flickrDownloadSession)
+    {   // SINGLETON
+        static dispatch_once_t onceToken;   // need to read Grand Central Dispatch documentation to understand this
+        dispatch_once(&onceToken, ^{
+            // notice the configuration here is "backgroundSessionConfiguration:"
+            // that means that we will (eventually) get the results even if we are not the foreground application
+            // even if our application crashed, it would get relaunched (eventually) to handle this URL's results!
+            NSURLSessionConfiguration *urlSessionConfig = [NSURLSessionConfiguration backgroundSessionConfiguration:FLICKR_FETCH];
+            _flickrDownloadSession = [NSURLSession sessionWithConfiguration:urlSessionConfig
+                                                                   delegate:self     // we MUST have a delegate for background configurations
+                                                              delegateQueue:nil];   // nil means "a random, non-main-queue queue"
+            
+        });
+    }
+    
+    return _flickrDownloadSession;
+}
+
+- (void) startFlickrFetchWithDescription: (NSDictionary*) taskInfo {
     // start a background download session - must use getTasksWithCompletionHandler when using a background session
     // our completion is handled by the URLSessionDelegate methods
-    [self.flickrDownloadSession getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+    [self.flickrDownloadSession getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks)
+    {
         if (![downloadTasks count])
         {
-            NSLog(@"starting FlickrFetch download in background");
-            NSURLSessionDownloadTask *task = [self.flickrDownloadSession downloadTaskWithURL:[FlickrFetcher URLforRecentGeoreferencedPhotos]];
-            task.taskDescription = FLICKR_FETCH;
+            NSURLSessionDownloadTask *task;
+            NSString *taskType = [taskInfo valueForKey:@"taskKey"];
+            if ([taskType isEqualToString:FLICKR_PHOTO_TASK]) {
+                NSLog(@"starting photo download in background");
+                task = [self.flickrDownloadSession downloadTaskWithURL:[FlickrFetcher URLforRecentGeoreferencedPhotos]];
+            }
+            else if ([taskType isEqualToString:FLICKR_PLACE_TASK]) {
+                NSLog(@"starting placeInfo download in background");
+                NSString *placeID = [taskInfo valueForKey:@"placeID"];
+                task = [self.flickrDownloadSession downloadTaskWithURL:[FlickrFetcher URLforInformationAboutPlace:placeID]];
+            }
+            task.taskDescription = taskType;
             [task resume];
         }
         else
@@ -178,26 +223,147 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
     }];
 }
 
-
-- (NSURLSession *)flickrDownloadSession // the NSURLSession we will use to fetch Flickr data in the background
-{
-    if (!_flickrDownloadSession)
-    {
-        static dispatch_once_t onceToken;   // need to read Grand Central Dispatch documentation to understand this
-        dispatch_once(&onceToken, ^{
-            // notice the configuration here is "backgroundSessionConfiguration:"
-            // that means that we will (eventually) get the results even if we are not the foreground application
-            // even if our application crashed, it would get relaunched (eventually) to handle this URL's results!
-            NSURLSessionConfiguration *urlSessionConfig = [NSURLSessionConfiguration backgroundSessionConfiguration:FLICKR_FETCH];
-            _flickrDownloadSession = [NSURLSession sessionWithConfiguration:urlSessionConfig
-                                                                   delegate:self     // we MUST have a delegate for background configurations
-                                                              delegateQueue:nil];   // nil means "a random, non-main-queue queue"
-
-        });
-    }
-
-    return _flickrDownloadSession;
+- (void) handlePhotoTimer:(NSTimer *)theTimer {
+    
+    [self startFlickrFetchWithDescription:[theTimer userInfo]];
 }
+
+#pragma mark Region and place processing
+
+
+- (void)handlePlaceTimer:(NSTimer *)timer
+{
+    [self fetchPlacesMissingRegionLink];
+}
+
+- (void) fetchPlacesMissingRegionLink {
+    
+    // query core data for any places that  do not have a region relationship yet
+        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"PlaceID"];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY region = nil"];
+        [request setPredicate:predicate];
+        [request setFetchLimit:5];      // leaving this unlimited sends too many requests to the server and it stops responding to me
+        TopRegionsAppDelegate *weakSelf  = self;
+        [weakSelf.context performBlock:^{
+            NSError *error;
+            // Create a list of placeID managed objects that don't have regions assigned
+            weakSelf.placeIDManagedObjectsWithoutRegionName = [[weakSelf.context executeFetchRequest:request error:&error]mutableCopy];
+          //  NSLog(@"self.placeIDManagedObjectsWithoutRegionName  %@", weakSelf.placeIDManagedObjectsWithoutRegionName);
+            // start up the first region download
+            [weakSelf regionDownload];
+        }];
+}
+
+- (void) regionDownload
+{
+    // if there are any photo managed objects on the queue, take off the first one
+    if ([self.placeIDManagedObjectsWithoutRegionName count] > 0)
+    {
+        PlaceID *place = [self.placeIDManagedObjectsWithoutRegionName firstObject];
+        // remove the place from the queue
+        [self.placeIDManagedObjectsWithoutRegionName removeObject:place];
+        
+        //  request place information from server
+        if (place.placeID)  // make sure the photo has a placeID as this is needed for the URL request to Flickr
+        {
+            NSDictionary *taskInfo = [NSDictionary dictionaryWithObjectsAndKeys:place.placeID, placeIDKey, FLICKR_PLACE_TASK, taskKey, nil];
+            [self startFlickrFetchWithDescription:taskInfo];
+            // add place to queue waiting for server results
+            [self.placeIDManagedObjectsWaitingForRegionResults addObject:place];
+        }
+        else {
+            NSLog(@"place missing placeID");
+        }
+    }
+    else   // There are no more places to process so clear out array
+    {
+        [self.placeIDManagedObjectsWaitingForRegionResults removeAllObjects];
+        NSLog(@"processed place batch of 5");
+        // set up a timer to space out the requests to the server
+        self.flickrForegroundFetchPlaceTimer = [NSTimer scheduledTimerWithTimeInterval:FOREGROUND_FLICKR_REGION_FETCH_INTERVAL
+                                                        target:self
+                                                      selector:@selector(handlePlaceTimer:)
+                                                      userInfo:nil
+                                                       repeats:NO];
+
+    }
+    
+}
+
+// extra json place results into property list
+- (NSDictionary *)flickrPlaceAtURL: (NSURL *)url
+{
+    // fetch the json data from Flickr
+    NSData *jsonResults = [NSData dataWithContentsOfURL:url];
+    // put it into a property list
+    NSDictionary *propertyListResults;
+    if (jsonResults) {
+        propertyListResults = [NSJSONSerialization JSONObjectWithData:jsonResults
+                                                              options:0
+                                                                error:NULL];
+    }
+    return propertyListResults;
+}
+
+// load the region into coreData
+- (void) loadFlickrRegionFromLocalURL:(NSURL *)localFile
+                          intoContext:(NSManagedObjectContext *)context
+                  andThenExecuteBlock:(void(^)())whenDone
+{
+    if (context)
+    {
+        NSDictionary *propertyListResults = [self flickrPlaceAtURL:localFile];
+        [context performBlockAndWait:^{
+            // SAVE THE REGION RESULTS INTO CORE DATA
+            [Region loadRegionFromFlickr:propertyListResults intoManagedContext:context];
+            if (whenDone) whenDone();
+        }];
+    } else {
+        if (whenDone) whenDone();
+    }
+    
+}
+
+
+
+// link placeID to region
+- (void) assignRegionToPlaceWithPlaceInfo:(NSURL *)localFile
+{
+    NSDictionary *propertyListResults = [self flickrPlaceAtURL:localFile];
+    for (PlaceID *place in self.placeIDManagedObjectsWaitingForRegionResults)
+    {
+        NSString *placeName = [FlickrFetcher extractNameOfPlace:place.placeID fromPlaceInformation:propertyListResults];
+        //   NSLog(@"NameOfPlace %@ for placeID %@", placeName, place.placeID);
+        if (placeName)
+        {
+            // found the region where this place belongs
+            //     NSLog(@"found region for place %@", place.placeID);
+            // fetch region entity
+            NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Region"];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name = %@", [FlickrFetcher extractRegionNameFromPlaceInformation:propertyListResults]];
+            [request setPredicate:predicate];
+            [self.context performBlockAndWait:^{
+                NSError *error = nil;
+                NSArray *results = [self.context executeFetchRequest:request error:&error];
+                if ((results) && ([results count] > 0)) {
+                    // set link between placeID entity and region entity
+                    Region *region = [results firstObject];
+                    [place addRegionObject:region];
+                    // set link in region to a photographer if this photographer is not already in the region's list of photographers
+                    [region addPhotographersObject:place.photo.whoTook];
+                    region.numberOfPhotographers = [NSNumber numberWithInt: [region.photographers count]];
+                    NSLog(@"assigned place %@ to region %@", place.placeID, region.name);
+                }
+                
+            }];
+        }
+    }
+    
+    
+}
+
+
+#pragma mark photo processing and downloading
 
 // standard "get photo information from Flickr URL" code
 
@@ -206,9 +372,12 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
     // fetch the json data from Flickr
     NSData *jsonResults = [NSData dataWithContentsOfURL:url];
     // put it into a property list
-    NSDictionary *propertyListResults = [NSJSONSerialization JSONObjectWithData:jsonResults
+    NSDictionary *propertyListResults;
+    if (jsonResults) {
+        propertyListResults = [NSJSONSerialization JSONObjectWithData:jsonResults
                                                                         options:0
                                                                           error:NULL];
+    }
     return [propertyListResults valueForKeyPath:FLICKR_RESULTS_PHOTOS];
 }
 
@@ -224,6 +393,7 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
         if (context)
         {
             NSArray *photos = [self flickrPhotosAtURL:localFile];
+           // NSLog(@"1 photo json %@", [photos firstObject]);
             [context performBlock:^{
                 [Photo loadPhotosFromFlickrArray:photos
                         intoManagedObjectContext:context];
@@ -234,6 +404,8 @@ NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotifica
         }
     
 }
+
+
 
 #pragma mark NSURLSessionDownloadDelegate
 
@@ -252,15 +424,35 @@ expectedTotalBytes:(int64_t)expectedTotalBytes
 didFinishDownloadingToURL:(NSURL *)localFile
 {
     // don't assume we are the only download going on
-    if ([downloadTask.taskDescription isEqualToString:FLICKR_FETCH])
+    if ([downloadTask.taskDescription isEqualToString:FLICKR_PHOTO_TASK])
     {
         NSLog(@"finished downloading Flick photos");
         [self loadFlickrPhotosFromLocalURL:localFile
                                 intoContext:self.context
                         andThenExecuteBlock:^{
+                            // kick off the download for new region info
+                            // set up a timer to delay the first request while core data populates after launch
+                            self.flickrForegroundFetchPlaceTimer = [NSTimer scheduledTimerWithTimeInterval:LAUNCH_POPULATION_DELAY
+                                                                                                    target:self
+                                                                                                  selector:@selector(handlePlaceTimer:)
+                                                                                                  userInfo:nil
+                                                                                                   repeats:NO];
+
                             [self flickrDownloadTasksMightBeComplete];
                         }];
     }
+    else if ([downloadTask.taskDescription isEqualToString:FLICKR_PLACE_TASK])
+    {
+        NSLog(@"finished downloading Flick place info");
+        [self loadFlickrRegionFromLocalURL:localFile
+                               intoContext:self.context
+                       andThenExecuteBlock:^{
+                           [self assignRegionToPlaceWithPlaceInfo:localFile];      // link up placeID to the region created using the place results downloaded
+                           [self regionDownload];
+                           [self flickrDownloadTasksMightBeComplete];
+                       }];
+    }
+
 }
 
 // required by the protocol

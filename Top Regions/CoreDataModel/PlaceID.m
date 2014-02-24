@@ -1,20 +1,20 @@
 //
-//  Photographer.m
+//  PlaceID.m
 //  Top Regions
 //
 //  Created by Susan Elias on 2/23/14.
 //  Copyright (c) 2014 GriffTech. All rights reserved.
 //
 
-#import "Photographer.h"
+#import "PlaceID.h"
 #import "Photo.h"
 #import "Region.h"
 
 
-@implementation Photographer
+@implementation PlaceID
 
-@dynamic name;
-@dynamic photos;
-@dynamic regions;
+@dynamic placeID;
+@dynamic photo;
+@dynamic region;
 
 @end

@@ -11,7 +11,7 @@
 
 @interface Region (create)
 
-+ (Region * )regionWithPlaceID: (NSString *)name
-                    withPhoto:(Photo *)photo;
++ (void) loadRegionFromFlickr: (NSDictionary *)propertyListResults
+           intoManagedContext: context;
 
 @end
