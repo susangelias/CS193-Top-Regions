@@ -14,11 +14,13 @@
 #import "PhotoDatabaseAvailability.h"
 
 // NOTIFICATION IDENTIFIERS
-NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotification";
+//NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotification";
 
 // DICTIONARY KEYS
 NSString * const placeIDKey = @"placeID";
 NSString * const taskKey = @"taskKey";
+// how long we'll wait for a Flickr fetch to return when we're in the background
+#define BACKGROUND_FLICKR_FETCH_TIMEOUT (10)
 
 @interface TopRegionsAppDelegate() <NSURLSessionDownloadDelegate>
 
@@ -58,6 +60,9 @@ NSString * const taskKey = @"taskKey";
         self.context = self.topRegionsManagedDocument.managedObjectContext;
     }
     
+    // set fetch interval for background fetching
+    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+    
     return YES;
 }
 							
@@ -71,11 +76,20 @@ NSString * const taskKey = @"taskKey";
 {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    self.flickrForegroundFetchPhotoTimer = nil;
+    self.flickrForegroundFetchPlaceTimer = nil;
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    // Get the initial data download going
+    NSMutableDictionary *taskInfo = [[NSDictionary dictionaryWithObjectsAndKeys:FLICKR_PHOTO_TASK, @"taskKey", nil]mutableCopy];
+    [self startFlickrFetchWithDescription:taskInfo];
+    
+    // set the timer for the periodic fetchs
+    [self setupForegroundPhotoFetchTimer];
+
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
@@ -100,6 +114,42 @@ NSString * const taskKey = @"taskKey";
     self.flickrDownloadBackgroundURLSessionCompletionHandler = completionHandler;
 
 }
+
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    // better to do a non-background-session fetch here since background session fetches are discretionary
+    // and the system can refuse to do it if the application is currently in the background (which it is
+    // guaranteed to be in this case
+    if (self.context)
+    {
+        NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        sessionConfig.allowsCellularAccess = NO;    // WIRELESS ONLY - DON'T RUN UP DATA USAGE IN THE BACKGROUND
+        sessionConfig.timeoutIntervalForRequest = BACKGROUND_FLICKR_FETCH_TIMEOUT;  // KEEP REQUEST SHORT SO THAT WE DON'T TAKE UP TOO MUCH OF THE SYSTEM'S TIME
+        NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfig];
+        NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[FlickrFetcher URLforRecentGeoreferencedPhotos]];
+        NSURLSessionDownloadTask *task = [session downloadTaskWithRequest:request
+                                                        completionHandler:^(NSURL *localFile, NSURLResponse *response, NSError *error) {
+                                                            if(error) {
+                                                                NSLog(@"Flickr background fetch failed: %@", error.localizedDescription);
+                                                                completionHandler(UIBackgroundFetchResultFailed);
+                                                            }
+                                                            else {
+                                                                [self loadFlickrPhotosFromLocalURL:localFile
+                                                                                       intoContext:self.context
+                                                                               andThenExecuteBlock:^{
+                                                                                   completionHandler(UIBackgroundFetchResultNewData);
+                                                                               }];
+                                                            }
+                                                        }
+                                          ];
+        [task resume];
+    }
+    else {
+        completionHandler(UIBackgroundFetchResultNoData);   // no app-switcher update if no database
+    }
+}
+
+
 
 #pragma mark   UIManagedDocument Setup
 
@@ -160,14 +210,23 @@ NSString * const taskKey = @"taskKey";
         NSMutableDictionary *taskInfo = [[NSDictionary dictionaryWithObjectsAndKeys:FLICKR_PHOTO_TASK, @"taskKey", nil]mutableCopy];
         [self startFlickrFetchWithDescription:taskInfo];
         
-        // Set up a timer to keep PHOTO fetches going when we are in the foreground
-        self.flickrForegroundFetchPhotoTimer = [NSTimer scheduledTimerWithTimeInterval:FOREGROUND_FLICKR_PHOTO_FETCH_INTERVAL
-                                                                           target:self
-                                                                         selector:@selector(handlePhotoTimer:)
-                                                                         userInfo:taskInfo
-                                                                          repeats:YES];
-    }
+        // set the timer for the periodic fetchs
+        [self setupForegroundPhotoFetchTimer];
+     }
 }
+
+- (void) setupForegroundPhotoFetchTimer
+{
+    // Set up a timer to keep PHOTO fetches going when we are in the foreground
+    NSMutableDictionary *taskInfo = [[NSDictionary dictionaryWithObjectsAndKeys:FLICKR_PHOTO_TASK, @"taskKey", nil]mutableCopy];
+    self.flickrForegroundFetchPhotoTimer = [NSTimer scheduledTimerWithTimeInterval:FOREGROUND_FLICKR_PHOTO_FETCH_INTERVAL
+                                                                            target:self
+                                                                          selector:@selector(handlePhotoTimer:)
+                                                                          userInfo:taskInfo
+                                                                           repeats:YES];
+   
+}
+
 
 #pragma mark Flickr Fetching
 
@@ -191,6 +250,7 @@ NSString * const taskKey = @"taskKey";
     return _flickrDownloadSession;
 }
 
+// Foreground fetch from the server
 - (void) startFlickrFetchWithDescription: (NSDictionary*) taskInfo {
     // start a background download session - must use getTasksWithCompletionHandler when using a background session
     // our completion is handled by the URLSessionDelegate methods
@@ -205,7 +265,7 @@ NSString * const taskKey = @"taskKey";
                 task = [self.flickrDownloadSession downloadTaskWithURL:[FlickrFetcher URLforRecentGeoreferencedPhotos]];
             }
             else if ([taskType isEqualToString:FLICKR_PLACE_TASK]) {
-                NSLog(@"starting placeInfo download in background");
+          //      NSLog(@"starting placeInfo download in background");
                 NSString *placeID = [taskInfo valueForKey:@"placeID"];
                 task = [self.flickrDownloadSession downloadTaskWithURL:[FlickrFetcher URLforInformationAboutPlace:placeID]];
             }
@@ -242,7 +302,7 @@ NSString * const taskKey = @"taskKey";
         NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"PlaceID"];
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"ANY region = nil"];
         [request setPredicate:predicate];
-        [request setFetchLimit:5];      // leaving this unlimited sends too many requests to the server and it stops responding to me
+        [request setFetchLimit:10];      // leaving this unlimited sends too many requests to the server and it stops responding to me
         TopRegionsAppDelegate *weakSelf  = self;
         [weakSelf.context performBlock:^{
             NSError *error;
@@ -278,7 +338,7 @@ NSString * const taskKey = @"taskKey";
     else   // There are no more places to process so clear out array
     {
         [self.placeIDManagedObjectsWaitingForRegionResults removeAllObjects];
-        NSLog(@"processed place batch of 5");
+    //    NSLog(@"processed place batch of 5");
         // set up a timer to space out the requests to the server
         self.flickrForegroundFetchPlaceTimer = [NSTimer scheduledTimerWithTimeInterval:FOREGROUND_FLICKR_REGION_FETCH_INTERVAL
                                                         target:self
@@ -443,7 +503,7 @@ didFinishDownloadingToURL:(NSURL *)localFile
     }
     else if ([downloadTask.taskDescription isEqualToString:FLICKR_PLACE_TASK])
     {
-        NSLog(@"finished downloading Flick place info");
+  //      NSLog(@"finished downloading Flick place info");
         [self loadFlickrRegionFromLocalURL:localFile
                                intoContext:self.context
                        andThenExecuteBlock:^{

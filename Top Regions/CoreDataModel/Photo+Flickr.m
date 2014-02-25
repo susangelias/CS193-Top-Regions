@@ -100,7 +100,7 @@
                 [self photoWithFlickrInfo:photo inManagedObjectContext:context];
             }
             else {
-                NSLog(@"already have photo in database");
+            //    NSLog(@"already have photo in database");
             }
         }
     }
