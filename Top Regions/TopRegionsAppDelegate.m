@@ -11,6 +11,7 @@
 #import "Photo+Flickr.h"
 #import "Region+create.h"
 #import "PlaceID.h"
+#import "PhotoDatabaseAvailability.h"
 
 // NOTIFICATION IDENTIFIERS
 NSString * const ContextReady = @"TopRegionsAppDelegateDidPrepareContextNotification";
@@ -149,10 +150,9 @@ NSString * const taskKey = @"taskKey";
     {
         self.context = self.topRegionsManagedDocument.managedObjectContext;
         
-        // Send the joyful proclamation that the context is ready for prime time!
-   //     NSLog(@"posting notitication that context is ready ");
+    //    NSLog(@"posting notitication that context is ready ");
         NSMutableDictionary *userInfo = [self.context ? @{PhotoDatabaseAvailabilityContext : self.context} : nil mutableCopy];
-        [[NSNotificationCenter defaultCenter] postNotificationName:ContextReady
+        [[NSNotificationCenter defaultCenter] postNotificationName:PhotoDatabaseAvailabilityNotification
                                                             object:self
                                                           userInfo:userInfo];
         

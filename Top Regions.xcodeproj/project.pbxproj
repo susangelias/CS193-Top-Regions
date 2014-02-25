@@ -81,6 +81,7 @@
 		C05BFF3518ABF9F800038902 /* TopRegionsModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TopRegionsModel.xcdatamodel; sourceTree = "<group>"; };
 		C08439BF18B851C700A8E105 /* PlaceID+create.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "PlaceID+create.h"; path = "CoreDataModel/PlaceID+create.h"; sourceTree = "<group>"; };
 		C08439C018B851C700A8E105 /* PlaceID+create.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "PlaceID+create.m"; path = "CoreDataModel/PlaceID+create.m"; sourceTree = "<group>"; };
+		C084906118BC2B220088396F /* PhotoDatabaseAvailability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhotoDatabaseAvailability.h; sourceTree = "<group>"; };
 		C09F566E18AE508F0088A321 /* Photographer+create.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Photographer+create.h"; path = "CoreDataModel/Photographer+create.h"; sourceTree = "<group>"; };
 		C09F566F18AE508F0088A321 /* Photographer+create.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "Photographer+create.m"; path = "CoreDataModel/Photographer+create.m"; sourceTree = "<group>"; };
 		C09F567118AE91DA0088A321 /* Region+create.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Region+create.h"; path = "CoreDataModel/Region+create.h"; sourceTree = "<group>"; };
@@ -161,6 +162,7 @@
 				C05BFF1C18ABEF9E00038902 /* View */,
 				C05BFF1818ABE56F00038902 /* CoreDataTableViewController */,
 				C05BFF1318ABE55900038902 /* Flickr Fetcher */,
+				C084906118BC2B220088396F /* PhotoDatabaseAvailability.h */,
 				C05BFEEA18ABE53600038902 /* TopRegionsAppDelegate.h */,
 				C05BFEEB18ABE53600038902 /* TopRegionsAppDelegate.m */,
 				C05BFEF618ABE53600038902 /* Images.xcassets */,

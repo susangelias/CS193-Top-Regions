@@ -8,8 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-extern NSString *const ContextReady;
-#define PhotoDatabaseAvailabilityContext @"Context"
+
 #define FLICKR_FETCH @"Flickr just uploaded fetch"
 #define FLICKR_PHOTO_TASK @"Flickr photo fetch"
 #define FLICKR_PLACE_TASK @"Flickr placeInfo fetch"
