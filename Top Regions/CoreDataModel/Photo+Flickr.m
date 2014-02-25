@@ -72,14 +72,39 @@
          intoManagedObjectContext:(NSManagedObjectContext *)context
 {
     // store every photo from the download into core data if it is not already in core data
-    for (NSDictionary *photo in photos)
-    {
-        [self photoWithFlickrInfo:photo inManagedObjectContext:context];
-    }
-    
+    // Fetch all the photoIDs from core data
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Photo"];
+    request.predicate = [NSPredicate predicateWithFormat:@"photoID != nil"];
+    NSArray *matches;
     NSError *error;
-    NSLog(@"number of photos in database %ul", [context  countForFetchRequest:request error:&error]);
+    matches = [context executeFetchRequest:request error:&error];
+    
+    if (!matches || error)
+    {
+        NSLog(@"loadPhotosFromFlickrArray: error in executeFetchRequest %@", error);
+    }
+    else if ([matches count])
+    {
+        // copy all the photoIDs into their own array
+        NSMutableArray *coreDataPhotoIDs = [[NSMutableArray alloc]init];
+        [matches enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            Photo *photo = obj;
+            [coreDataPhotoIDs addObject:photo.photoID];
+        }];
+        NSString *photoID;
+        for (NSDictionary *photo in photos)
+        {
+            photoID = [photo valueForKeyPath:FLICKR_PHOTO_ID];
+            // check to see if the photoID from the downloaded photo is already in our list of core data photoIDs
+            if (![coreDataPhotoIDs containsObject:photoID]) {
+                [self photoWithFlickrInfo:photo inManagedObjectContext:context];
+            }
+            else {
+                NSLog(@"already have photo in database");
+            }
+        }
+    }
+    NSLog(@"number of photos in database %ul", [matches count]);
 }
 
 @end
