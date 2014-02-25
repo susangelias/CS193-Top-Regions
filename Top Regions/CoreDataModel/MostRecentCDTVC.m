@@ -30,7 +30,7 @@
     NSSortDescriptor *byViewedDate = [NSSortDescriptor sortDescriptorWithKey:@"viewedDate"
                                                                    ascending:NO
                                                                     selector:@selector(compare:)];
-
+    request.fetchLimit = 50;
     request.sortDescriptors = @[byViewedDate];
     
     self.fetchedResultsController = [[NSFetchedResultsController alloc]initWithFetchRequest:request
