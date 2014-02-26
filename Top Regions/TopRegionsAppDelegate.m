@@ -194,7 +194,7 @@ NSString * const taskKey = @"taskKey";
 {
     if (self.topRegionsManagedDocument.documentState != UIDocumentStateNormal)
     {
-        NSLog(@"managedDocumentIsReady failed: documentState = %u", self.topRegionsManagedDocument.documentState);
+        NSLog(@"managedDocumentIsReady failed: documentState = %lu", self.topRegionsManagedDocument.documentState);
     }
     else
     {

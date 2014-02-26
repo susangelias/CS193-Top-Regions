@@ -6,11 +6,11 @@
 //  Copyright (c) 2014 GriffTech. All rights reserved.
 //
 
-#import "CoreDataTableViewController.h"
+#import "PhotoCDTViewController.h"
 #import "Region.h"
 
 
-@interface PhotosInSelectedRegionCDTVC : CoreDataTableViewController
+@interface PhotosInSelectedRegionCDTVC : PhotoCDTViewController
 
 @property (nonatomic, strong) Region *selectedRegion;
 @property (nonatomic, strong) NSArray *regionPhotos;

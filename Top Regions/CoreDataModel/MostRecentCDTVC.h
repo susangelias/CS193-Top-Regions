@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "CoreDataTableViewController.h"
+#import "PhotoCDTViewController.h"
 
-@interface MostRecentCDTVC : CoreDataTableViewController
+@interface MostRecentCDTVC : PhotoCDTViewController
 
 @property (nonatomic, strong) NSManagedObjectContext  *context;
 
